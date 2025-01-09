@@ -45,6 +45,17 @@ jobs:
       - name: Install NPM packages
         run: npm install
 
+      - name: Set version ${{ github.event.release.tag_name }}
+        env: 
+          NEXT_VERSION: ${{ github.event.release.tag_name }}
+        run: |
+          # package.json
+          echo "$(jq --arg next_version "${NEXT_VERSION}" '.version=$next_version' package.json)" > package.json
+          # tauri.conf.json
+          echo "$(jq --arg next_version "${NEXT_VERSION}" '.version=$next_version' src-tauri/tauri.conf.json)" > src-tauri/tauri.conf.json
+          # cargo.toml
+          cd src-tauri && cargo install cargo-bump && cargo bump ${NEXT_VERSION}
+
       - name: Build and release application 
         uses: tauri-apps/tauri-action@v0
         env:
@@ -53,5 +64,4 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGN_KEY_PASSWORD }}
         with:
           tagName: ${{ github.event.release.tag_name }}
-          args: |
-            ${{ matrix.args }} --config '"{ \"version\": \"${{ github.event.release.tag_name }}\" }"'
+          args: ${{ matrix.args }}
