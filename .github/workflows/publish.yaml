@@ -59,19 +59,19 @@ jobs:
       - name: TEMP - Upload package.json
         uses: actions/upload-artifact@v4
         with:
-          name: package.json
+          name: package-${{ matrix.platform }}.json
           path: package.json
 
       - name: TEMP - Upload tauri.conf.json
         uses: actions/upload-artifact@v4
         with:
-          name: tauri.conf.json
+          name: tauri-${{ matrix.platform }}.conf.json
           path: src-tauri/tauri.conf.json
 
       - name: TEMP - Upload cargo.toml
         uses: actions/upload-artifact@v4
         with:
-          name: cargo.toml
+          name: cargo-${{ matrix.platform }}.toml
           path: src-tauri/cargo.toml
 
       - name: Build and release application 
