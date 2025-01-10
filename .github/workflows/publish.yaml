@@ -55,7 +55,7 @@ jobs:
           echo "$(jq --arg next_version "${NEXT_VERSION}" '.version=$next_version' src-tauri/tauri.conf.json)" > src-tauri/tauri.conf.json
           # cargo.toml
           cd src-tauri && cargo install cargo-bump && cargo bump ${NEXT_VERSION}
-      
+          
       - name: [TEMP] Upload package.json
         uses: actions/upload-artifact@v4
         with:
