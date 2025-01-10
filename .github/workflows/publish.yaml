@@ -54,15 +54,6 @@ jobs:
           # cargo.toml
           cd src-tauri && cargo install cargo-bump && cargo bump ${{ github.event.release.tag_name }}
 
-      - name: TEMP - Upload package.json, tauri.conf.json and cargo.toml
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.platform }}-package-files
-          path: |
-            package.json
-            src-tauri/tauri.conf.json
-            src-tauri/cargo.toml
-
       - name: Build and release application 
         uses: tauri-apps/tauri-action@v0
         env:
