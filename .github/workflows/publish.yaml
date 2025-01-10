@@ -56,23 +56,14 @@ jobs:
           # cargo.toml
           cd src-tauri && cargo install cargo-bump && cargo bump ${NEXT_VERSION}
 
-      - name: TEMP - Upload package.json
+      - name: TEMP - Upload package.json, tauri.conf.json and cargo.toml
         uses: actions/upload-artifact@v4
         with:
-          name: package-${{ matrix.platform }}.json
-          path: package.json
-
-      - name: TEMP - Upload tauri.conf.json
-        uses: actions/upload-artifact@v4
-        with:
-          name: tauri-${{ matrix.platform }}.conf.json
-          path: src-tauri/tauri.conf.json
-
-      - name: TEMP - Upload cargo.toml
-        uses: actions/upload-artifact@v4
-        with:
-          name: cargo-${{ matrix.platform }}.toml
-          path: src-tauri/cargo.toml
+          name: ${{ matrix.platform }}-package-files
+          path: |
+            package.json
+            src-tauri/tauri.conf.json
+            src-tauri/cargo.toml
 
       - name: Build and release application 
         uses: tauri-apps/tauri-action@v0
