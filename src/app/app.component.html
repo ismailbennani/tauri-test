@@ -4,16 +4,53 @@
 
   <div class="spacer"></div>
 
-  @if (availableUpdate(); as availableUpdate) {
-    @if (availableUpdate === "none") {
-      <p class="small">Up to date!</p>
-    } @else {
-      <p class="small">
-        A new update is available: {{ availableUpdate.version }}.
-        <a href="javascript:void" (click)="relaunch()">Restart</a>
-      </p>
+  @if (availableUpdateInstallationState(); as availableUpdateInstallationState) {
+    @switch (availableUpdateInstallationState) {
+      @case ('none') {
+        @if (availableUpdate(); as availableUpdate) {
+          @switch (availableUpdate) {
+            @case ('none') {
+              <p class="small">Up to date!</p>
+            }
+            @case ('loading') {
+              <p class="small">Looking for updates...</p>
+            }
+            @case ('error') {
+              <p class="small error">An error occurred while looking for updates.</p>
+            }
+            @default {
+              <p class="small">
+                A new update is available: {{ availableUpdate.version }}.
+                <a href="javascript:void" (click)="install()">Install</a>
+              </p>
+            }
+          }
+        }
+      }
+
+      @default {
+        @switch (availableUpdateInstallationState.newVersion) {
+          @case ('downloading') {
+            <p class="small">
+              Downloading version
+              {{ availableUpdateInstallationState.newVersion }}: {{ availableUpdateInstallationState.downloaded }} /
+              {{ availableUpdateInstallationState.totalLength }} bytes...
+            </p>
+          }
+          @case ('installing') {
+            <p class="small">
+              Installing version
+              {{ availableUpdateInstallationState.newVersion }}...
+            </p>
+          }
+          @case ('done') {
+            <p class="small">
+              Version {{ availableUpdateInstallationState.newVersion }} has been installed!
+              <a href="javascript:void" (click)="relaunch()">Restart</a>
+            </p>
+          }
+        }
+      }
     }
-  } @else if (availableUpdate() === undefined) {
-    <p class="small">Looking for updates...</p>
   }
 </main>
