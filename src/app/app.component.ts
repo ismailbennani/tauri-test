@@ -2,6 +2,7 @@ import { CommonModule } from "@angular/common";
 import { Component, signal, Signal, WritableSignal } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { getVersion } from "@tauri-apps/api/app";
+import { confirm } from '@tauri-apps/plugin-dialog';
 import { error } from "@tauri-apps/plugin-log";
 import { exit, relaunch } from "@tauri-apps/plugin-process";
 import { check, Update } from "@tauri-apps/plugin-updater";
@@ -49,6 +50,11 @@ export class AppComponent {
 
     var update = this.availableUpdate();
     if (update === "loading" || update === "error" || update === "none" || !update.available) {
+      return;
+    }
+
+    const confirmation = await confirm(`Do you want to download and install version ${update.version} now ?`, { kind: "info" });
+    if (!confirmation) {
       return;
     }
 
