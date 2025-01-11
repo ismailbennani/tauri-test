@@ -1,35 +1,35 @@
 import { CommonModule } from "@angular/common";
-import { Component, OnInit } from "@angular/core";
-import { RouterOutlet } from "@angular/router";
+import { Component, Signal } from "@angular/core";
+import { toSignal } from "@angular/core/rxjs-interop";
 import { getVersion } from "@tauri-apps/api/app";
-import { invoke } from "@tauri-apps/api/core";
-import { exit, relaunch } from '@tauri-apps/plugin-process';
-import { check, Update } from '@tauri-apps/plugin-updater';
+import { error } from "@tauri-apps/plugin-log";
+import { exit, relaunch } from "@tauri-apps/plugin-process";
+import { check, Update } from "@tauri-apps/plugin-updater";
+import { catchError, from, map, Observable, of } from "rxjs";
 
 @Component({
   selector: "app-root",
   standalone: true,
-  imports: [CommonModule, RouterOutlet],
+  imports: [CommonModule],
   templateUrl: "./app.component.html",
   styleUrl: "./app.component.css",
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   greetingMessage = "";
-  appVersion = "";
-  availableUpdate: Update | null = null;
+  appVersion: Signal<string | undefined>;
+  availableUpdate: Signal<Update | "none" | "error" | undefined>;
 
-  async ngOnInit() {
-    this.appVersion = await getVersion();
-    this.availableUpdate = await check();
-  }
-
-  greet(event: SubmitEvent, name: string): void {
-    event.preventDefault();
-
-    // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    invoke<string>("greet", { name }).then((text) => {
-      this.greetingMessage = text;
-    });
+  constructor() {
+    this.appVersion = toSignal(from((async () => await getVersion())()));
+    this.availableUpdate = toSignal(
+      from((async () => await check({ timeout: 10000 }))()).pipe(
+        map((u: Update | null): Update | "none" => (u === null ? "none" : u)),
+        catchError((e: any): Observable<"error"> => {
+          error(`Error while looking for updates: ${e}`);
+          return of("error");
+        })
+      )
+    );
   }
 
   async relaunch() {
