@@ -1,4 +1,13 @@
 <main class="container">
-  <h1>Tauri + Angular</h1>
+  <h1 class="title">Tauri + Angular</h1>
   <p>Version {{ appVersion }}</p>
+  <div class="spacer"></div>
+  @if (availableUpdate === null) {
+    <p class="small">Up to date!</p>
+  } @else {
+    <p class="small">
+      A new update is available: {{ availableUpdate.version }}.
+      <a href="javascript:void" (click)="relaunch()">Restart</a>
+    </p>
+  }
 </main>

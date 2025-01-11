@@ -15,12 +15,26 @@
 }
 
 .container {
-  margin: 0;
-  padding-top: 10vh;
+  height: 100%;
+
   display: flex;
   flex-direction: column;
+  align-items: center;
   justify-content: center;
   text-align: center;
+}
+
+.title {
+  padding-top: 10vh;
+}
+
+.spacer {
+  flex-shrink: 0;
+  flex-grow: 1;
+}
+
+.small {
+  font-size: small;
 }
 
 @media (prefers-color-scheme: dark) {

@@ -1,8 +1,10 @@
-import { Component, OnInit } from "@angular/core";
 import { CommonModule } from "@angular/common";
+import { Component, OnInit } from "@angular/core";
 import { RouterOutlet } from "@angular/router";
-import { invoke } from "@tauri-apps/api/core";
 import { getVersion } from "@tauri-apps/api/app";
+import { invoke } from "@tauri-apps/api/core";
+import { exit, relaunch } from '@tauri-apps/plugin-process';
+import { check, Update } from '@tauri-apps/plugin-updater';
 
 @Component({
   selector: "app-root",
@@ -14,9 +16,11 @@ import { getVersion } from "@tauri-apps/api/app";
 export class AppComponent implements OnInit {
   greetingMessage = "";
   appVersion = "";
+  availableUpdate: Update | null = null;
 
   async ngOnInit() {
     this.appVersion = await getVersion();
+    this.availableUpdate = await check();
   }
 
   greet(event: SubmitEvent, name: string): void {
@@ -26,5 +30,10 @@ export class AppComponent implements OnInit {
     invoke<string>("greet", { name }).then((text) => {
       this.greetingMessage = text;
     });
+  }
+
+  async relaunch() {
+    await exit(0);
+    await relaunch();
   }
 }
