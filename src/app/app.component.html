@@ -2,6 +2,42 @@
   <h1 class="title">Tauri + Angular</h1>
   <p>Version {{ appVersion() }}</p>
 
+  @if (osInformation(); as osInformation) {
+    <div class="block">
+      <h2>OS information</h2>
+      <div class="row">
+        <div class="key">platform</div>
+        <div>:</div>
+        <div class="value">{{ osInformation.platform }}</div>
+      </div>
+      <div class="row">
+        <div class="key">version</div>
+        <div>:</div>
+        <div class="value">{{ osInformation.version }}</div>
+      </div>
+      <div class="row">
+        <div class="key">family</div>
+        <div>:</div>
+        <div class="value">{{ osInformation.family }}</div>
+      </div>
+      <div class="row">
+        <div class="key">type</div>
+        <div>:</div>
+        <div class="value">{{ osInformation.type }}</div>
+      </div>
+      <div class="row">
+        <div class="key">arch</div>
+        <div>:</div>
+        <div class="value">{{ osInformation.arch }}</div>
+      </div>
+      <div class="row">
+        <div class="key">locale</div>
+        <div>:</div>
+        <div class="value">{{ osInformation.locale }}</div>
+      </div>
+    </div>
+  }
+
   <div class="spacer"></div>
 
   @if (availableUpdateInstallationState(); as availableUpdateInstallationState) {
@@ -19,7 +55,10 @@
               <p class="small">Looking for updates...</p>
             }
             @case ('error') {
-              <p class="small error">An error occurred while looking for updates.</p>
+              <p class="small error">
+                An error occurred while looking for updates.
+                <a href="javascript:void" (click)="checkForUpdates()">Check again</a>
+              </p>
             }
             @default {
               <p class="small">

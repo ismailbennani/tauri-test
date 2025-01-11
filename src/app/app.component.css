@@ -24,6 +24,19 @@
   text-align: center;
 }
 
+.block {
+  text-align: left;
+}
+
+.row {
+  display: flex;
+  gap: 8px;
+}
+
+.key {
+  width: 64px;
+}
+
 .title {
   padding-top: 10vh;
 }
