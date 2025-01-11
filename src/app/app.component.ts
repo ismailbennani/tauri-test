@@ -5,7 +5,7 @@ import { getVersion } from "@tauri-apps/api/app";
 import { error } from "@tauri-apps/plugin-log";
 import { exit, relaunch } from "@tauri-apps/plugin-process";
 import { check, Update } from "@tauri-apps/plugin-updater";
-import { catchError, from, map, Observable, of } from "rxjs";
+import { from } from "rxjs";
 
 @Component({
   selector: "app-root",
@@ -18,21 +18,28 @@ export class AppComponent {
   greetingMessage = "";
   appVersion: Signal<string | undefined>;
 
-  availableUpdate: Signal<"loading" | Update | "error" | "none">;
+  availableUpdate: WritableSignal<"loading" | Update | "error" | "none"> = signal("none");
   availableUpdateInstallationState: WritableSignal<"none" | DownloadState> = signal("none");
 
   constructor() {
     this.appVersion = toSignal(from((async () => await getVersion())()));
+    this.checkForUpdates().then();
+  }
 
-    const availableUpdateObservable: Observable<"loading" | Update | "error" | "none"> = from((async () => await check({ timeout: 10000 }))()).pipe(
-      map((u: Update | null): Update | "none" => (u === null ? "none" : u)),
-      catchError((e: any): Observable<"error"> => {
-        error(`Error while looking for updates: ${e}`);
-        return of("error");
-      })
-    )
+  async checkForUpdates() {
+    this.availableUpdate.set("loading");
 
-    this.availableUpdate = toSignal(availableUpdateObservable, { initialValue: "loading" });
+    try {
+      const update = await check({ timeout: 10000 });
+      if (update != null && update.available) {
+        this.availableUpdate.set(update);
+      } else {
+        this.availableUpdate.set("none");
+      }
+    } catch (e) {
+      error(`Error while looking for updates: ${e}`);
+      this.availableUpdate.set("error");
+    }
   }
 
   async install() {

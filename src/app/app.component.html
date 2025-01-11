@@ -10,7 +10,10 @@
         @if (availableUpdate(); as availableUpdate) {
           @switch (availableUpdate) {
             @case ('none') {
-              <p class="small">Up to date!</p>
+              <p class="small">
+                Up to date!
+                <a href="javascript:void" (click)="checkForUpdates()">Check for updates</a>
+              </p>
             }
             @case ('loading') {
               <p class="small">Looking for updates...</p>
